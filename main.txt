@@ -1,0 +1,3 @@
+<form action="/save/" method="POST">
+<input type="text" name="URL1"><br><input type="submit" value="Decide!">
+</form>
