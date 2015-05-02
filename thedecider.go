@@ -1,7 +1,8 @@
 package main
 
 import (
-  "fmt"
+  //"fmt"
+  "log"
   "io/ioutil"
   "net/http"
   "html/template"
@@ -31,15 +32,10 @@ func loadPage(title string) (*Page, error) {
   return &Page{Title: title, Body: body}, nil
 }
 
-// This should probably always load the main page
-func mainPageHandler(w http.ResponseWriter, r *http.Request) {
-  //title := r.URL.Path[len("/view/"):]
-  pageName := "main"
-  p, _ := loadPage(pageName)
-  fmt.Fprintf(w, "<h1>Welcome to The Decider!</h1><div>%s</div>", p.Body)
-}
 
-func decideHandler(w http.ResponseWriter, r *http.Request) {
+// Handles loading of the main page "/"
+func mainHandler(w http.ResponseWriter, r *http.Request) {
+  log.Println("Loading main page...")
 
   // Quickly make a page with a basic title and no body
   p := Page{Title: "the Decision maker"}
@@ -50,7 +46,10 @@ func decideHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func answerHandler(w http.ResponseWriter, r *http.Request) {
+// Handles loading of the decision page "/decide/"
+func decideHandler(w http.ResponseWriter, r *http.Request) {
+  log.Println("Loading decision page...")
+
   d := Decision{}
 
   d.Page1 = r.FormValue("PAGE1")
@@ -71,10 +70,20 @@ func answerHandler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w,d)
 }
 
+// Main execution
 func main() {
-  http.HandleFunc("/answer/", answerHandler)
+  // Handlers
+  http.HandleFunc("/", mainHandler)
   http.HandleFunc("/decide/", decideHandler)
-  fmt.Println("Listening on port 8080...")
-  http.ListenAndServe(":8080", nil)
+
+  // Log start of server
+  log.Println("About to listen on port 8080...")
+
+  // Start server
+  httpErr := http.ListenAndServe(":8080", nil)
+  if httpErr != nil {
+    log.Fatal("ListenAndServe: ", httpErr)
+  }
+
 
 }
