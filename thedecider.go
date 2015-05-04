@@ -47,14 +47,15 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handles loading of the decision page "/decide/"
-func decideHandler(w http.ResponseWriter, r *http.Request) {
+func decideHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
   log.Println("Loading decision page...")
 
   d := Decision{}
 
-  d.Page1 = r.FormValue("PAGE1")
-  d.Page2 = r.FormValue("PAGE2")
+  d.Page1 = httpRequest.FormValue("PAGE1")
+  d.Page2 = httpRequest.FormValue("PAGE2")
 
+  // Fetch the pages for comparison
   res, err1 := http.Get(d.Page1)
   if err1 != nil {
     //handle error
@@ -67,7 +68,7 @@ func decideHandler(w http.ResponseWriter, r *http.Request) {
   d.Response1 = string(responseBody[:])
 
   t, _ := template.ParseFiles("answer.html")
-  t.Execute(w,d)
+  t.Execute(httpResponseWriter,d)
 }
 
 // Main execution
